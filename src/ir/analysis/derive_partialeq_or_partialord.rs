@@ -116,6 +116,10 @@ impl<'ctx> CannotDerivePartialEqOrPartialOrd<'ctx> {
             return CanDerive::No;
         }
 
+        if self.ctx.no_partialord_by_name(&item) {
+            return CanDerive::No;
+        }
+
         trace!("ty: {:?}", ty);
         if item.is_opaque(self.ctx, &()) {
             if ty.is_union()

@@ -550,6 +550,20 @@ impl Builder {
         }
 
         self.options
+            .no_partialord_types
+            .get_items()
+            .iter()
+            .map(|item| {
+                output_vector.push("--no-partialord".into());
+                output_vector.push(
+                    item.trim_left_matches("^")
+                        .trim_right_matches("$")
+                        .into(),
+                );
+            })
+            .count();
+
+        self.options
             .no_partialeq_types
             .get_items()
             .iter()
@@ -1272,6 +1286,13 @@ impl Builder {
 
     /// Don't derive `PartialEq` for a given type. Regular
     /// expressions are supported.
+    pub fn no_partialord<T: Into<String>>(mut self, arg: T) -> Builder {
+        self.options.no_partialord_types.insert(arg.into());
+        self
+    }
+
+    /// Don't derive `PartialEq` for a given type. Regular
+    /// expressions are supported.
     pub fn no_partialeq<T: Into<String>>(mut self, arg: T) -> Builder {
         self.options.no_partialeq_types.insert(arg.into());
         self
@@ -1495,6 +1516,9 @@ struct BindgenOptions {
 
     rustfmt_configuration_file: Option<PathBuf>,
 
+    /// The set of types that we should not derive `PartialOrd` for.
+    no_partialord_types: RegexSet,
+
     /// The set of types that we should not derive `PartialEq` for.
     no_partialeq_types: RegexSet,
 
@@ -1522,6 +1546,7 @@ impl BindgenOptions {
         self.constified_enums.build();
         self.constified_enum_modules.build();
         self.rustified_enums.build();
+        self.no_partialord_types.build();
         self.no_partialeq_types.build();
         self.no_copy_types.build();
         self.no_hash_types.build();
@@ -1600,6 +1625,7 @@ impl Default for BindgenOptions {
             time_phases: false,
             rustfmt_bindings: true,
             rustfmt_configuration_file: None,
+            no_partialord_types: Default::default(),
             no_partialeq_types: Default::default(),
             no_copy_types: Default::default(),
             no_hash_types: Default::default(),

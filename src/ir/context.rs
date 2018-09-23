@@ -2550,6 +2550,12 @@ If you encounter an error missing from this list, please file an issue or a PR!"
         self.has_float.as_ref().unwrap().contains(&id.into())
     }
 
+    /// Check if `--no-partialord` flag is enabled for this item.
+    pub fn no_partialord_by_name(&self, item: &Item) -> bool {
+        let name = item.canonical_path(self)[1..].join("::");
+        self.options().no_partialord_types.matches(&name)
+    }
+
     /// Check if `--no-partialeq` flag is enabled for this item.
     pub fn no_partialeq_by_name(&self, item: &Item) -> bool {
         let name = item.canonical_path(self)[1..].join("::");

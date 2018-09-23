@@ -284,6 +284,13 @@ where
                 .takes_value(true)
                 .multiple(false)
                 .number_of_values(1),
+            Arg::with_name("no-partialord")
+                .long("no-partialord")
+                .help("Avoid deriving PartialOrd for types matching <regex>.")
+                .value_name("regex")
+                .takes_value(true)
+                .multiple(true)
+                .number_of_values(1),
             Arg::with_name("no-partialeq")
                 .long("no-partialeq")
                 .help("Avoid deriving PartialEq for types matching <regex>.")
@@ -593,6 +600,12 @@ where
         }
 
         builder = builder.rustfmt_configuration_file(Some(path));
+    }
+
+    if let Some(no_partialord) = matches.values_of("no-partialord") {
+        for regex in no_partialord {
+            builder = builder.no_partialord(regex);
+        }
     }
 
     if let Some(no_partialeq) = matches.values_of("no-partialeq") {
